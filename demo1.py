@@ -96,6 +96,7 @@ class PSO:
         for step in range(self.max_steps):
 
             # 生成 population_size * dim 的二维数组
+            # r1, r2 的作用只在下面的更新速度的公式中用到了，但具体含义是什么我不懂
             r1 = np.random.rand(self.population_size, self.dim)
             r2 = np.random.rand(self.population_size, self.dim)
 
@@ -173,9 +174,9 @@ class PSO:
             print("np.min(fitness) = ", np.min(fitness))
             print("np.argmin(fitness) = ", np.argmin(fitness))
             print("self.global_best_fitness", self.global_best_fitness)
-            
+
             # np.min() 返回数组中的最小值
-            if np.min(fitness) < self.global_best_fitness: 
+            if np.min(fitness) < self.global_best_fitness:
                 """
                     np.argmin() 返回数组中最小值的下标
                     例如：
