@@ -75,7 +75,7 @@ class PSO:
         self.pg = self.x[np.argmin(fitness)]  # 全局最佳位置
 
         self.individual_best_fitness = fitness  # 个体的最优适应度
-        # print(self.individual_best_fitness)
+
         self.global_best_fitness = np.min(fitness)  # 全局最佳适应度
 
     # 计算适应度，返回一个一维数组
@@ -90,6 +90,7 @@ class PSO:
         """
         return np.sum(np.square(x), axis=1)
 
+    # 演变方法，演变次数就是传入的迭代次数
     def evolve(self):
         # max_steps 迭代次数
         for step in range(self.max_steps):
@@ -98,11 +99,11 @@ class PSO:
             r1 = np.random.rand(self.population_size, self.dim)
             r2 = np.random.rand(self.population_size, self.dim)
 
-            # 更新速度和粒子群的位置
+            # 更新速度和粒子群的位置，这里用到的应该是固定的公式
             self.v = self.w * self.v + self.c1 * r1 * (self.p - self.x) + self.c2 * r2 * (self.pg - self.x)
             self.x = self.v + self.x
 
-            # 关闭图形窗口
+            # 关闭图形窗口，目前它的真正用途我还没看出来
             plt.close()
 
             """
@@ -113,7 +114,7 @@ class PSO:
                 参数 s 即 size 声明粒子在图中的大小
                 c 即 color 声明粒子在图中的颜色
             """
-            plt.scatter(self.x[:, 0], self.x[:, 1], s=300, c='r')
+            plt.scatter(self.x[:, 0], self.x[:, 1], s=50, c='r')
 
             """
                 plt.xlim(xmin, xmax)
@@ -135,9 +136,9 @@ class PSO:
                 plt.pause(time)
                 迭代停留的时间time，单位是秒
             """
-            plt.pause(3)
+            plt.pause(0.5)
 
-            # 通过粒子群新的位置 self.x 更新粒子群适应度 fitness
+            # 通过粒子群新的位置 self.x ,更新粒子群适应度 fitness
             fitness = self.calculate_fitness(self.x)
 
             """
@@ -162,27 +163,41 @@ class PSO:
                     update_id = [True, False, True, True, False]
                     那么 self.x[update_id] = [[1, 1, 1], [3, 3, 3], [4, 4, 4]]
             """
-            print("self.p = ", self.p)
             self.p[update_id] = self.x[update_id]
-            print("self.p[update_id] = ", self.p[update_id])
-            # print("===========")
-            # print("fitness = ", fitness)
-            # print("fitness[update_id] = ", fitness[update_id])
+            print("fitness = ", fitness)
 
             # fitness[update_id]中 在 update_id 中对应位置为 True 的数会被保存下来
             self.individual_best_fitness[update_id] = fitness[update_id]
 
             # 新一代出现了更小的fitness，所以更新全局最优fitness和位置
             print("np.min(fitness) = ", np.min(fitness))
+            print("np.argmin(fitness) = ", np.argmin(fitness))
             print("self.global_best_fitness", self.global_best_fitness)
-            if np.min(fitness) < self.global_best_fitness:
+            
+            # np.min() 返回数组中的最小值
+            if np.min(fitness) < self.global_best_fitness: 
+                """
+                    np.argmin() 返回数组中最小值的下标
+                    例如：
+                        [4, 3, 5, 1, 2]  则返回 3
+                        [6, 2, 3, 5, 4]  则返回 1
+                """
                 self.pg = self.x[np.argmin(fitness)]
                 self.global_best_fitness = np.min(fitness)
-            # best fitness 最佳适应度，mean fitness 平均适应度
+            """
+                best fitness 最佳适应度，mean fitness 平均适应度
+                np.mean(),这里返回 fitness 数组的平均数，保留一位小数
+                这里传入的 fitness 是一个一维数组，假如是[1, 2, 3, 4, 5]，则返回 3.0
+                %.5f 意思是保留 5 位小数
+            """
             print('best fitness: %.5f, mean fitness: %.5f' % (self.global_best_fitness, np.mean(fitness)))
             print("=======================================")
 
 
+# pso 为创建了 PSO 类的实例，传入 2 个参数
+# 对应的第一个是粒子群数量，第二个是迭代次数
 pso = PSO(5, 20)
+# 调用类的演变方法
 pso.evolve()
-plt.show()
+
+# plt.show()
